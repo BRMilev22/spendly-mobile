@@ -35,7 +35,7 @@ const ReceiptScreen = () => {
         const photoData = await cameraRef.current.takePictureAsync(options); // Capture the photo
         setPhoto(photoData.uri); // Update photo state
 
-        // Call Taggun API with the captured image
+        // Prepare data for API
         const formData = new FormData();
         formData.append('file', {
           uri: photoData.uri,
@@ -43,15 +43,22 @@ const ReceiptScreen = () => {
           name: 'receipt.jpg',
         });
 
-        const response = await axios.post('https://api.taggun.io/api/receipt', formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            'x-api-key': 'YOUR_TAGGUN_API_KEY',
-          },
-        });
-        setResult(response.data); // Handle the response as needed
+        const response = await axios.post(
+          'https://api.taggun.io/api/receipt/v1/simple/file',
+          formData,
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+              accept: 'application/json',
+              apikey: 'd4465e4090b011efb0f8efd54ea213cb',
+            },
+          }
+        );
+
+        setResult(response.data);
+        console.log(response.data);
       } catch (error) {
-        console.error(error);
+        console.error('Error capturing or processing the receipt:', error);
       }
     }
   };

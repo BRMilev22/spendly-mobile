@@ -1,8 +1,10 @@
+// LoginScreen.tsx
 import React, { useState } from 'react';
 import { View, TextInput, Text, Image, StyleSheet, ImageBackground, TouchableOpacity } from 'react-native';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from './firebase';
 import { styled } from 'nativewind';
+import { useNavigation } from '@react-navigation/native'; // Import useNavigation
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -23,7 +25,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 20,
     width: '90%',
-    maxWidth: 400,  // Set a maximum width for larger screens
+    maxWidth: 400, // Set a maximum width for larger screens
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: {
@@ -51,10 +53,10 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   signInButton: {
-    backgroundColor: '#FD7C20',  // Orange color
+    backgroundColor: '#FD7C20', // Orange color
     borderRadius: 8,
     padding: 12,
-    width: '100%',  // Make the button full width
+    width: '100%', // Make the button full width
     alignItems: 'center',
     marginTop: 10,
   },
@@ -70,8 +72,13 @@ const styles = StyleSheet.create({
   line: {
     flex: 1,
     height: 1,
-    backgroundColor: '#636363',  // Line color
+    backgroundColor: '#636363', // Line color
     marginHorizontal: 10,
+  },
+  userIdText: {
+    color: 'white',
+    marginTop: 20,
+    fontWeight: 'bold',
   },
 });
 
@@ -79,20 +86,27 @@ const LoginScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [userId, setUserId] = useState<string | null>(null);
+  const navigation = useNavigation(); // Get the navigation object
 
   const handleLogin = async () => {
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      setUserId(user.uid); // Store the user ID in state
+      setError('');
       console.log('Logged in');
+      navigation.navigate('Receipt'); // Navigate to ReceiptScreen
     } catch (err) {
       setError(err.message);
+      setUserId(null); // Clear user ID if login fails
     }
   };
 
   return (
-    <ImageBackground 
-        source={require('./assets/background.png')} 
-        style={styles.background} 
+    <ImageBackground
+        source={require('./assets/background.png')}
+        style={styles.background}
         resizeMode="cover"
     >
       <StyledView className="items-center justify-center flex-1 relative">
@@ -129,6 +143,9 @@ const LoginScreen = () => {
           <TouchableOpacity style={styles.signInButton} onPress={handleLogin}>
             <Text style={styles.signInButtonText}>Sign in</Text>
           </TouchableOpacity>
+
+          {/* Display the user ID if logged in */}
+          {userId && <Text style={styles.userIdText}>User ID: {userId}</Text>}
         </View>
       </StyledView>
     </ImageBackground>

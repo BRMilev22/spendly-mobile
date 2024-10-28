@@ -62,36 +62,61 @@ const ReceiptScreen = () => {
     }
   };
 
-  const saveReceiptToFirestore = async (receiptData: any) => {
-    try {
-      const userId = auth.currentUser?.uid;
-      if (!userId) {
-        console.error('User is not authenticated');
-        return;
-      }
-
-      const receiptDocument = {
-        date: receiptData.date || null,
-        totalAmount: receiptData.totalAmount || null,
-      };
-
-      const userReceiptsRef = doc(firestore, 'users-receipts', userId);
-      const userReceiptsSnapshot = await getDoc(userReceiptsRef);
-      const receipts = userReceiptsSnapshot.data() || {};
-      const nextReceiptNumber = Object.keys(receipts).length + 1;
-
-      await setDoc(
-        userReceiptsRef,
-        { [`Receipt ${nextReceiptNumber}`]: receiptDocument },
-        { merge: true }
-      );
-
-      console.log('Receipt saved to Firestore');
-      Alert.alert('Success', 'Receipt saved to Firestore');
-    } catch (error) {
-      console.error('Error saving receipt to Firestore:', error);
+const saveReceiptToFirestore = async (receiptData: any) => {
+  try {
+    const userId = auth.currentUser?.uid;
+    if (!userId) {
+      console.error('User is not authenticated');
+      return;
     }
-  };
+
+    const receiptDocument = {
+      date: receiptData.date || null,
+      totalAmount: receiptData.totalAmount
+    };
+
+    // Save the receipt to the users-receipts collection
+    const userReceiptsRef = doc(firestore, 'users-receipts', userId);
+    const userReceiptsSnapshot = await getDoc(userReceiptsRef);
+    const receipts = userReceiptsSnapshot.data() || {};
+    const nextReceiptNumber = Object.keys(receipts).length + 1;
+
+    await setDoc(
+      userReceiptsRef,
+      { [`Receipt ${nextReceiptNumber}`]: receiptDocument },
+      { merge: true }
+    );
+
+    // Get the current monthly income
+    const userRef = doc(firestore, 'users', userId);
+    const userSnapshot = await getDoc(userRef);
+    const userData = userSnapshot.data();
+
+    if (!userData || typeof userData.monthlyIncome !== 'number') {
+      console.error('Monthly income data is missing or invalid');
+      return;
+    }
+
+    const receiptAmount = typeof receiptData.totalAmount?.data === 'number' 
+    ? receiptData.totalAmount.data 
+    : parseFloat(receiptData.totalAmount?.data) || 0
+
+
+    const currentIncome = userData.monthlyIncome;
+    console.log("Current income: " + currentIncome);
+    console.log("Receipt amount: " + receiptAmount);
+    const newIncome = currentIncome - receiptAmount;
+    console.log("New income: " + newIncome);
+
+    // Update the user's monthly income
+    await setDoc(userRef, { monthlyIncome: newIncome }, { merge: true });
+
+    console.log('Receipt saved and monthly income updated in Firestore');
+    Alert.alert('Success', 'Receipt saved and monthly income updated');
+  } catch (error) {
+    console.error('Error saving receipt or updating monthly income:', error);
+  }
+};
 
   return (
     <View style={styles.container}>

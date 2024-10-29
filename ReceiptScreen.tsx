@@ -30,7 +30,7 @@ const ReceiptScreen = () => {
         friction: 2,
         useNativeDriver: true,
       }).start();
-
+  
       const options = { skipProcessing: false, base64: true };
       try {
         const photoData = await cameraRef.current.takePictureAsync(options);
@@ -40,7 +40,7 @@ const ReceiptScreen = () => {
           type: 'image/jpeg',
           name: 'receipt.jpg',
         });
-
+  
         const response = await axios.post(
           'https://api.taggun.io/api/receipt/v1/simple/file',
           formData,
@@ -52,11 +52,23 @@ const ReceiptScreen = () => {
             },
           }
         );
-
+  
         const receiptData = response.data;
+  
+        // Check for the totalAmount to validate receipt
+        if (receiptData.totalAmount?.data === 0) {
+          Alert.alert('Warning', 'This is not a receipt.');
+          return;
+        }
+  
         await saveReceiptToFirestore(receiptData);
       } catch (error) {
-        console.error('Error capturing or processing the receipt:', error);
+        // Check for Axios error response status
+        if (axios.isAxiosError(error) && error.response?.status === 400) {
+          Alert.alert('Warning', 'This is not a receipt.');
+        } else {
+          console.error('Error capturing or processing the receipt:', error);
+        }
       } finally {
         // Ensure loading state is updated and camera view is resumed
         setLoading(false);
@@ -68,6 +80,7 @@ const ReceiptScreen = () => {
       }
     }
   };
+  
 
   const saveReceiptToFirestore = async (receiptData: any) => {
     try {

@@ -90,31 +90,43 @@ const ReceiptScreen = () => {
         return;
       }
   
-      const receiptAmount =
-        typeof receiptData.totalAmount?.data === 'number'
-          ? receiptData.totalAmount.data
-          : parseFloat(receiptData.totalAmount?.data) || 0;
+      // Get the total amount and confidence from the receipt data
+      const receiptAmountData = receiptData.totalAmount?.data || 0;
+      const confidenceLevel = receiptData.totalAmount?.confidence || 0; // Adjust if the confidence level field differs
   
       // Check if the receipt total amount is 0, if so, exit early
-      if (receiptAmount === 0) {
+      if (receiptAmountData === 0) {
         console.warn('Receipt total amount is 0, not adding to database.');
         Alert.alert('Warning', 'This is not a receipt.');
         return;
       }
   
+      // Add a very small value to the receipt amount
+      const adjustedReceiptAmount = receiptAmountData + 0.00000000001;
+  
+      // Structure the receipt document as a map with confidence and data
       const receiptDocument = {
         date: receiptData.date || null,
-        totalAmount: receiptData.totalAmount,
+        totalAmount: {
+          data: adjustedReceiptAmount, // Save the adjusted amount
+          confidence: confidenceLevel, // Save the confidence level
+        },
       };
   
       const userReceiptsRef = doc(firestore, 'users-receipts', userId);
       const userReceiptsSnapshot = await getDoc(userReceiptsRef);
       const receipts = userReceiptsSnapshot.data() || {};
-      const nextReceiptNumber = Object.keys(receipts).length + 1;
+      
+      // Start from 9999 and decrement based on the number of existing receipts
+      const startingReceiptNumber = 9999;
+      const nextReceiptNumber = startingReceiptNumber - Object.keys(receipts).length;
+  
+      // Format the receipt number to have leading zeros (e.g., Receipt 9999)
+      const formattedReceiptNumber = `Receipt ${String(nextReceiptNumber)}`;
   
       await setDoc(
         userReceiptsRef,
-        { [`Receipt ${nextReceiptNumber}`]: receiptDocument },
+        { [formattedReceiptNumber]: receiptDocument }, // Use formatted receipt number
         { merge: true }
       );
   
@@ -128,7 +140,7 @@ const ReceiptScreen = () => {
       }
   
       const currentIncome = userData.monthlyIncome;
-      const newIncome = currentIncome - receiptAmount;
+      const newIncome = currentIncome - adjustedReceiptAmount; // Use the adjusted amount
   
       await setDoc(userRef, { monthlyIncome: newIncome }, { merge: true });
   
@@ -138,6 +150,9 @@ const ReceiptScreen = () => {
       console.error('Error saving receipt or updating monthly income:', error);
     }
   };
+  
+  
+  
   
   return (
     <View style={styles.container}>

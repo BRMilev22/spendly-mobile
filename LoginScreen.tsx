@@ -1,6 +1,6 @@
 // LoginScreen.tsx
 import React, { useState } from 'react';
-import { View, TextInput, Text, Image, StyleSheet, ImageBackground, TouchableOpacity } from 'react-native';
+import { View, TextInput, Text, Image, StyleSheet, ImageBackground, TouchableOpacity, StatusBar, KeyboardAvoidingView, Platform } from 'react-native';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from './firebase';
 import { styled } from 'nativewind';
@@ -47,7 +47,9 @@ const styles = StyleSheet.create({
     borderBottomColor: '#636363',
     marginBottom: 20,
     color: 'white',
-  },
+    paddingVertical: 10, // Add padding for a larger tap area
+    fontSize: 16, // Increase font size for better readability
+  },  
   errorText: {
     color: 'red',
     marginBottom: 10,
@@ -104,6 +106,12 @@ const LoginScreen = () => {
   };
 
   return (
+    <>
+  <StatusBar barStyle="light-content" />
+  <KeyboardAvoidingView
+    style={{ flex: 1 }}
+    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+  >
     <ImageBackground
         source={require('./assets/background.png')}
         style={styles.background}
@@ -126,6 +134,10 @@ const LoginScreen = () => {
             onChangeText={setEmail}
             style={styles.input}
             placeholderTextColor="rgba(255, 255, 255, 0.6)"
+            autoCapitalize="none" // Avoid capitalizing email
+            autoCorrect={false} // Disable auto-correction for email
+            keyboardAppearance="dark"
+            textContentType="oneTimeCode"
           />
 
           <TextInput
@@ -135,6 +147,9 @@ const LoginScreen = () => {
             secureTextEntry
             style={styles.input}
             placeholderTextColor="rgba(255, 255, 255, 0.6)"
+            autoCapitalize="none" // Avoid capitalizing password
+            autoCorrect={false} // Disable auto-correction for password
+            keyboardAppearance="dark"
           />
 
           {error ? <Text style={styles.errorText}>{error}</Text> : null}
@@ -145,10 +160,12 @@ const LoginScreen = () => {
           </TouchableOpacity>
 
           {/* Display the user ID if logged in */}
-          {userId && <Text style={styles.userIdText}>User ID: {userId}</Text>}
+          {/*userId && <Text style={styles.userIdText}>User ID: {userId}</Text>*/}
         </View>
       </StyledView>
     </ImageBackground>
+  </KeyboardAvoidingView>
+  </>
   );
 };
 

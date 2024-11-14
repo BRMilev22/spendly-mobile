@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { StyleSheet, Text, View, Alert, ActivityIndicator, TouchableOpacity, Animated } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
-import { auth, firestore } from './firebase'; // Import Firebase authentication and Firestore
-import { doc, setDoc, getDoc } from 'firebase/firestore'; // Import Firestore functions
+import { auth, firestore } from './firebase'; 
+import { doc, setDoc, getDoc } from 'firebase/firestore';
 import axios from 'axios';
 
 const ReceiptScreen = () => {
@@ -24,9 +24,9 @@ const ReceiptScreen = () => {
 
   const handleCapture = async () => {
     if (cameraRef.current) {
-      setLoading(true);  // Set loading to true immediately
+      setLoading(true);  
       Animated.spring(scaleAnim, {
-        toValue: 1,  // Scale to full size
+        toValue: 1,  
         friction: 2,
         useNativeDriver: true,
       }).start();
@@ -55,7 +55,6 @@ const ReceiptScreen = () => {
   
         const receiptData = response.data;
   
-        // Check for the totalAmount to validate receipt
         if (receiptData.totalAmount?.data === 0) {
           Alert.alert('Warning', 'This is not a receipt.');
           return;
@@ -63,17 +62,15 @@ const ReceiptScreen = () => {
   
         await saveReceiptToFirestore(receiptData);
       } catch (error) {
-        // Check for Axios error response status
         if (axios.isAxiosError(error) && error.response?.status === 400) {
           Alert.alert('Warning', 'This is not a receipt.');
         } else {
           console.error('Error capturing or processing the receipt:', error);
         }
       } finally {
-        // Ensure loading state is updated and camera view is resumed
         setLoading(false);
         Animated.spring(scaleAnim, {
-          toValue: 0,  // Scale back to original size
+          toValue: 0,
           friction: 2,
           useNativeDriver: true,
         }).start();
@@ -90,26 +87,22 @@ const ReceiptScreen = () => {
         return;
       }
   
-      // Get the total amount and confidence from the receipt data
       const receiptAmountData = receiptData.totalAmount?.data || 0;
-      const confidenceLevel = receiptData.totalAmount?.confidence || 0; // Adjust if the confidence level field differs
+      const confidenceLevel = receiptData.totalAmount?.confidence || 0; 
   
-      // Check if the receipt total amount is 0, if so, exit early
       if (receiptAmountData === 0) {
         console.warn('Receipt total amount is 0, not adding to database.');
         Alert.alert('Warning', 'This is not a receipt.');
         return;
       }
   
-      // Add a very small value to the receipt amount
       const adjustedReceiptAmount = receiptAmountData + 0.00000000001;
   
-      // Structure the receipt document as a map with confidence and data
       const receiptDocument = {
         date: receiptData.date || null,
         totalAmount: {
-          data: adjustedReceiptAmount, // Save the adjusted amount
-          confidence: confidenceLevel, // Save the confidence level
+          data: adjustedReceiptAmount, 
+          confidence: confidenceLevel, 
         },
       };
   
@@ -117,16 +110,14 @@ const ReceiptScreen = () => {
       const userReceiptsSnapshot = await getDoc(userReceiptsRef);
       const receipts = userReceiptsSnapshot.data() || {};
       
-      // Start from 9999 and decrement based on the number of existing receipts
       const startingReceiptNumber = 9999;
       const nextReceiptNumber = startingReceiptNumber - Object.keys(receipts).length;
   
-      // Format the receipt number to have leading zeros (e.g., Receipt 9999)
       const formattedReceiptNumber = `Receipt ${String(nextReceiptNumber)}`;
   
       await setDoc(
         userReceiptsRef,
-        { [formattedReceiptNumber]: receiptDocument }, // Use formatted receipt number
+        { [formattedReceiptNumber]: receiptDocument }, 
         { merge: true }
       );
   
@@ -140,7 +131,7 @@ const ReceiptScreen = () => {
       }
   
       const currentIncome = userData.monthlyIncome;
-      const newIncome = currentIncome - adjustedReceiptAmount; // Use the adjusted amount
+      const newIncome = currentIncome - adjustedReceiptAmount;
   
       await setDoc(userRef, { monthlyIncome: newIncome }, { merge: true });
   
@@ -217,11 +208,11 @@ const styles = StyleSheet.create({
     bottom: 0,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#282c34',  // Dark background color
+    backgroundColor: '#282c34', 
   },
   loadingIndicator: {
     alignItems: 'center',
-    backgroundColor: '#282c34',  // Same as overlay to blend in
+    backgroundColor: '#282c34', 
     padding: 20,
     borderRadius: 10,
   },

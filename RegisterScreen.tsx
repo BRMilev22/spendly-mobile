@@ -1,9 +1,8 @@
-// Inside LoginScreen.tsx
 import React, { useState } from 'react';
 import { View, TextInput, Text, Image, StyleSheet, ImageBackground, TouchableOpacity, StatusBar, KeyboardAvoidingView, Platform } from 'react-native';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth, firestore } from './firebase';
-import { doc, getDoc } from 'firebase/firestore';  
+import { doc, setDoc } from 'firebase/firestore';  
 import { styled } from 'nativewind';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -27,7 +26,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 20,
     width: '90%',
-    maxWidth: 400, // Set a maximum width for larger screens
+    maxWidth: 400, 
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: {
@@ -49,18 +48,18 @@ const styles = StyleSheet.create({
     borderBottomColor: '#636363',
     marginBottom: 20,
     color: 'white',
-    paddingVertical: 10, // Add padding for a larger tap area
-    fontSize: 16, // Increase font size for better readability
+    paddingVertical: 10, 
+    fontSize: 16, 
   },  
   errorText: {
     color: 'red',
     marginBottom: 10,
   },
   signInButton: {
-    backgroundColor: '#FD7C20', // Orange color
+    backgroundColor: '#FD7C20', 
     borderRadius: 8,
     padding: 12,
-    width: '100%', // Make the button full width
+    width: '100%', 
     alignItems: 'center',
     marginTop: 10,
   },
@@ -76,7 +75,7 @@ const styles = StyleSheet.create({
   line: {
     flex: 1,
     height: 1,
-    backgroundColor: '#636363', // Line color
+    backgroundColor: '#636363', 
     marginHorizontal: 10,
   },
   userIdText: {
@@ -84,43 +83,34 @@ const styles = StyleSheet.create({
     marginTop: 20,
     fontWeight: 'bold',
   },
-  registerText: {
-    color: '#00D048', // Green color
-    marginTop: 20,
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
 });
 
-const LoginScreen = () => {
+const RegisterScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [username, setUsername] = useState('');
   const [error, setError] = useState('');
-  const navigation = useNavigation(); // Get the navigation object
+  const navigation = useNavigation();
 
-  const handleLogin = async () => {
+  const handleRegister = async () => {
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
       setError('');
-  
-      await AsyncStorage.setItem('userId', user.uid);
 
-      const userDocRef = doc(firestore, 'users', user.uid);
-      const userDoc = await getDoc(userDocRef);
-  
-      if (userDoc.exists()) {
-        const userData = userDoc.data();
-        const { username, monthlyIncome } = userData;
-  
-        await AsyncStorage.setItem('username', username);
-        await AsyncStorage.setItem('monthlyIncome', monthlyIncome.toString());
-  
-        console.log('Logged in and user data saved');
-        navigation.replace('App');
-      } else {
-        setError('User data not found');
-      }
+      await setDoc(doc(firestore, 'users', user.uid), {
+        username: username,
+        email: email,
+        monthlyIncome: 0,
+      });
+
+      await AsyncStorage.setItem('userId', user.uid);
+      await AsyncStorage.setItem('username', username);
+      await AsyncStorage.setItem('email', email);
+
+      console.log('User registered successfully');
+
+      navigation.replace('App');
     } catch (err) {
       setError(err.message);
     }
@@ -144,9 +134,20 @@ const LoginScreen = () => {
             <View style={styles.claymorphicCard}>
               <View style={styles.loginContainer}>
                 <View style={styles.line} />
-                <StyledText className="text-white font-bold">Login</StyledText>
+                <StyledText className="text-white font-bold">Register</StyledText>
                 <View style={styles.line} />
               </View>
+
+              <TextInput
+                placeholder="Username"
+                value={username}
+                onChangeText={setUsername}
+                style={styles.input}
+                placeholderTextColor="rgba(255, 255, 255, 0.6)"
+                autoCapitalize="none"
+                autoCorrect={false}
+                keyboardAppearance="dark"
+              />
 
               <TextInput
                 placeholder="Email"
@@ -157,7 +158,7 @@ const LoginScreen = () => {
                 autoCapitalize="none"
                 autoCorrect={false}
                 keyboardAppearance="dark"
-                textContentType="oneTimeCode"
+                textContentType="emailAddress"
               />
 
               <TextInput
@@ -174,13 +175,8 @@ const LoginScreen = () => {
 
               {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
-              <TouchableOpacity style={styles.signInButton} onPress={handleLogin}>
-                <Text style={styles.signInButtonText}>Sign in</Text>
-              </TouchableOpacity>
-
-              {/* Navigate to Register Screen */}
-              <TouchableOpacity onPress={() => navigation.navigate('Register')}>
-                <Text style={styles.registerText}>Don't have an account? Sign Up</Text>
+              <TouchableOpacity style={styles.signInButton} onPress={handleRegister}>
+                <Text style={styles.signInButtonText}>Sign Up</Text>
               </TouchableOpacity>
 
             </View>
@@ -191,4 +187,4 @@ const LoginScreen = () => {
   );
 };
 
-export default LoginScreen;
+export default RegisterScreen;

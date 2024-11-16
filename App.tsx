@@ -42,7 +42,7 @@ const AppTabs = () => {
           tabBarLabel: 'Home',
           tabBarIcon: ({ color, size }) => <Ionicons name="home" size={size} color={color} />,
           headerShown: false,
-        }}z
+        }}
       />
       <Tab.Screen
         name="Receipts"

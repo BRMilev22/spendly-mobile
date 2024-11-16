@@ -12,7 +12,7 @@ const HomeScreen = () => {
   const [monthlyIncome, setMonthlyIncome] = useState('');
   const [latestPurchase, setLatestPurchase] = useState(null);
   const [biggestPurchase, setBiggestPurchase] = useState(null);
-  const [isFormVisible, setFormVisible] = useState(false);
+  const [isFormVisible, setFormVisible] = useState(false); // Form is hidden by default
   const [chartData, setChartData] = useState(null);
   const navigation = useNavigation();
 
@@ -26,7 +26,7 @@ const HomeScreen = () => {
         console.error('User ID not found');
         return;
       }
-
+  
       const userDocRef = doc(firestore, 'users', userId);
       onSnapshot(userDocRef, (snapshot) => {
         if (snapshot.exists()) {
@@ -72,11 +72,10 @@ const HomeScreen = () => {
 
             const sortedReceipts = receipts.sort((a, b) => new Date(a.date) - new Date(b.date));
 
-            const labels = sortedReceipts.map(receipt => new Date(receipt.date).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit' }));
             const data = sortedReceipts.map(receipt => receipt.totalAmount);
 
             setChartData({
-              labels,
+              labels: [],
               datasets: [
                 {
                   data,
@@ -142,6 +141,14 @@ const HomeScreen = () => {
       style={styles.background}
       resizeMode="cover"
     >
+      <TouchableOpacity style={styles.logoutButton} onPress={logout}>
+        <Text style={styles.logoutButtonText}>Log Out</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.editButton} onPress={toggleForm}>
+        <Text>Edit Profile</Text>
+      </TouchableOpacity>
+
       <View style={styles.overlay}>
         <ScrollView contentContainerStyle={styles.content}>
           <Text style={styles.welcomeText}>Welcome</Text>
@@ -151,78 +158,71 @@ const HomeScreen = () => {
             <Text style={styles.balance}>{parseFloat(monthlyIncome).toFixed(2)}</Text>
             <Text style={styles.currency}>BGN</Text>
           </View>
-
-          <View style={styles.claymorphicBox}>
-            <View style={styles.wideBox}>
-              {chartData ? (
-                <LineChart
-                  data={chartData}
-                  width={Dimensions.get('window').width - 40}
-                  height={300}
-                  chartConfig={{
-                    backgroundColor: 'transparent',
-                    backgroundGradientFrom: '#3b3b3b',
-                    backgroundGradientTo: '#5a5a5a',
-                    decimalPlaces: 2,
-                    color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-                    labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-                    style: {
-                      borderRadius: 16,
-                    },
-                    propsForDots: {
-                      r: '5',
-                      strokeWidth: '2',
-                      stroke: '#ff6347',
-                    },
-                    propsForLabels: {
-                      fontSize: 10,
-                    },
-                  }}
-                  bezier
-                  style={styles.chart}
-                  onDataPointClick={(e) => {
-                    alert(`You clicked on ${e.index} - ${chartData.labels[e.index]} with value: ${e.value}`);
-                  }}
-                />
-              ) : (
-                <Text>No purchase data available.</Text>
-              )}
-            </View>
-            <View style={styles.row}>
-              <View style={styles.smallBox}>
-                <Text style={styles.boxTitle}>Latest Purchase</Text>
-                <Text style={styles.boxContent}>{latestPurchase}</Text>
-              </View>
-              <View style={styles.smallBox}>
-                <Text style={styles.boxTitle}>Biggest Purchase</Text>
-                <Text style={styles.boxContent}>{biggestPurchase}</Text>
-              </View>
-            </View>
-          </View>
-
-          <TouchableOpacity style={styles.logoutButton} onPress={logout}>
-            <Text style={styles.logoutButtonText}>Log Out</Text>
-          </TouchableOpacity>
-
-          {isFormVisible && (
-            <View style={styles.slidingForm}>
-              <Text style={styles.inputLabel}>Username</Text>
-              <TextInput style={styles.input} value={username} onChangeText={setUsername} />
-              <Text style={styles.inputLabel}>Monthly Income</Text>
-              <TextInput
-                style={styles.input}
-                keyboardType="numeric"
-                value={monthlyIncome}
-                onChangeText={setMonthlyIncome}
-              />
-              <Button title="Save" onPress={saveProfile} style={styles.saveButton} />
-            </View>
-          )}
-
-          <TouchableOpacity style={styles.editButton} onPress={toggleForm}>
-            <Text>Edit Profile</Text>
-          </TouchableOpacity>
         </ScrollView>
+
+        {isFormVisible && (
+          <View style={styles.slidingFormBottomCentered}>
+            <Text style={styles.inputLabel}>Username</Text>
+            <TextInput style={styles.input} value={username} onChangeText={setUsername} />
+            <Text style={styles.inputLabel}>Monthly Income</Text>
+            <TextInput
+              style={styles.input}
+              keyboardType="numeric"
+              value={monthlyIncome}
+              onChangeText={setMonthlyIncome}
+            />
+            <Button title="Save" onPress={saveProfile} style={styles.saveButton} />
+          </View>
+        )}
+      </View>
+
+      <View style={styles.wideBoxContainer}>
+        <View style={styles.wideBox}>
+          {chartData ? (
+            <LineChart
+              data={chartData}
+              width={Dimensions.get('window').width-30}
+              height={300}
+              chartConfig={{
+                backgroundColor: 'transparent',
+                backgroundGradientFrom: '#3b3b3b',
+                backgroundGradientTo: '#5a5a5a',
+                decimalPlaces: 2,
+                color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+                labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+                style: {
+                  borderRadius: 16,
+                },
+                propsForDots: {
+                  r: '5',
+                  strokeWidth: '2',
+                  stroke: '#00FF00',
+                },
+                propsForBackgroundLines: {
+                  strokeWidth: 0,
+                },
+              }}
+              bezier
+              style={styles.chart}
+              onDataPointClick={(e) => {
+                alert(`You clicked on ${e.index} with value: ${e.value}`);
+              }}
+            />
+          ) : (
+            <Text>No purchase data available.</Text>
+          )}
+        </View>
+
+        <View style={styles.rowBottomLargeCentered}>
+          <View style={styles.largeBoxBottomCentered}>
+            <Text style={styles.boxTitleLarge}>Latest Purchase</Text>
+            <Text style={styles.boxContentLarge}>{latestPurchase}</Text>
+          </View>
+          <View style={styles.largeBoxBottomCentered}>
+            <Text style={styles.boxTitleLarge}>Biggest Purchase</Text>
+            <Text style={styles.boxContentLarge}>{biggestPurchase}</Text>
+          </View>
+        </View>
       </View>
     </ImageBackground>
   );
@@ -269,64 +269,85 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: '#00D048',
   },
-  claymorphicBox: {
-    width: '100%',
-    padding: 15,
-    borderRadius: 23,
-    backgroundColor: '#464646',
-    marginVertical: 20,
+  wideBoxContainer: {
+    backgroundColor: '#2a2a2a',
+    padding: 20,
+    borderRadius: 20,
+    alignItems: 'center',
+    position: 'absolute',
+    bottom: 20,
+    width: Dimensions.get('window').width,
+    alignSelf: 'center',
   },
   wideBox: {
     height: 300,
     backgroundColor: '#D9D9D9',
     borderRadius: 15,
-    marginBottom: 20,
     alignItems: 'center',
     justifyContent: 'center',
+    width: '100%',
+    marginBottom: 20,
   },
   chart: {
     borderRadius: 16,
   },
-  row: {
+  rowBottomLargeCentered: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'space-around',
+    width: '100%',
   },
-  smallBox: {
+  largeBoxBottomCentered: {
     flex: 1,
-    height: 120,
+    height: 160,
     backgroundColor: '#D9D9D9',
     borderRadius: 15,
-    marginRight: 10,
+    marginHorizontal: 10,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  boxTitle: {
-    fontSize: 12,
+  boxTitleLarge: {
+    fontSize: 16,
     fontWeight: '800',
     color: '#3B3B3B',
   },
-  boxContent: {
-    fontSize: 24,
+  boxContentLarge: {
+    fontSize: 28,
     fontWeight: '800',
     color: '#3B3B3B',
   },
   logoutButton: {
+    position: 'absolute',
+    top: 20,
+    left: 20,
     paddingVertical: 10,
     paddingHorizontal: 20,
     backgroundColor: '#FD7C20',
     borderRadius: 20,
-    marginTop: 20,
+    zIndex: 10, // Ensures it appears on top
   },
   logoutButtonText: {
     color: 'white',
     fontWeight: '600',
   },
-  slidingForm: {
-    width: '100%',
-    padding: 20,
-    backgroundColor: '#424242',
-    marginTop: 20,
+  editButton: {
+    position: 'absolute',
+    top: 20,
+    right: 20,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    backgroundColor: '#222222',
     borderRadius: 10,
+    zIndex: 10, // Ensures it appears on top
+  },
+  slidingFormBottomCentered: {
+    width: '90%',
+    padding: 30,
+    backgroundColor: '#424242',
+    position: 'absolute',
+    bottom: 0,
+    left: '5%',
+    zIndex: 20,
+    borderRadius: 20,
   },
   inputLabel: {
     color: '#636363',
@@ -340,12 +361,6 @@ const styles = StyleSheet.create({
   },
   saveButton: {
     marginTop: 20,
-  },
-  editButton: {
-    marginTop: 10,
-    padding: 10,
-    backgroundColor: '#222222',
-    borderRadius: 10,
   },
 });
 

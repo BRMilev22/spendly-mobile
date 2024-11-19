@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, FlatList, TouchableOpacity, Modal, StyleSheet, Alert, ImageBackground } from 'react-native';
+import { View, Text, TextInput, Button, FlatList, TouchableOpacity, Modal, StyleSheet, Alert, ImageBackground, Platform } from 'react-native';
 import { firestore } from './firebase';
 import { collection, doc, setDoc, getDoc, updateDoc, onSnapshot, deleteField } from 'firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -62,7 +62,6 @@ const RemindersScreen = () => {
         if (userDoc.exists()) {
           const data = userDoc.data();
           const existingIds = Object.keys(data).map(Number);
-          
           let nextId = existingIds.length > 0 ? Math.min(...existingIds) - 1 : 9999;
   
           await updateDoc(userRemindersRef, {
@@ -86,7 +85,7 @@ const RemindersScreen = () => {
       console.error('Error adding reminder: ', error);
       Alert.alert('Error adding reminder');
     }
-  };    
+  };
 
   const handleDeleteReminder = async (reminderId) => {
     try {
@@ -115,9 +114,10 @@ const RemindersScreen = () => {
   };
 
   const onDateTimeChange = (event, selectedDate) => {
-    const currentDate = selectedDate || reminderDueDate;
     setShowDatePicker(false);
-    setReminderDueDate(currentDate);
+    if (selectedDate) {
+      setReminderDueDate(selectedDate);
+    }
   };
 
   const formatDueDate = (timestamp) => {
@@ -130,7 +130,9 @@ const RemindersScreen = () => {
       <View style={styles.overlay}>
         <View style={styles.container}>
           <Text style={styles.header}>Reminders</Text>
-          <Button title="Add Reminder" onPress={() => setIsModalVisible(true)} color="#48BB78" />
+          <View style={styles.addButton}>
+            <Button title="Add Reminder" onPress={() => setIsModalVisible(true)} color="#48BB78" />
+          </View>
           <Modal visible={isModalVisible} animationType="slide" transparent={true}>
             <View style={styles.modalOverlay}>
               <View style={styles.modalContent}>
@@ -155,7 +157,7 @@ const RemindersScreen = () => {
                     value={reminderDueDate}
                     mode="datetime"
                     is24Hour={true}
-                    display="default"
+                    display={Platform.OS === 'android' ? 'default' : 'spinner'}
                     onChange={onDateTimeChange}
                     minimumDate={new Date()}
                   />
@@ -203,7 +205,7 @@ const styles = StyleSheet.create({
     color: 'white',
     marginBottom: 10,
     padding: 10,
-    borderRadius: 5,
+    borderRadius: 10,
   },
   modalOverlay: {
     flex: 1,
@@ -214,7 +216,7 @@ const styles = StyleSheet.create({
   modalContent: {
     backgroundColor: '#222',
     padding: 20,
-    borderRadius: 10,
+    borderRadius: 15,
     width: '80%',
   },
   modalHeader: {
@@ -226,7 +228,7 @@ const styles = StyleSheet.create({
   datePickerButton: {
     padding: 10,
     backgroundColor: '#444',
-    borderRadius: 5,
+    borderRadius: 10,
     marginVertical: 10,
   },
   datePickerText: {
@@ -240,7 +242,7 @@ const styles = StyleSheet.create({
   reminderItem: {
     backgroundColor: '#333',
     padding: 15,
-    borderRadius: 5,
+    borderRadius: 10,
     marginBottom: 10,
   },
   reminderTitle: {
@@ -267,6 +269,11 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     paddingHorizontal: 20,
     paddingTop: 60,
+  },
+  addButton: {
+    marginBottom: 20,
+    borderRadius: 10, // Less rounded corners
+    overflow: 'hidden',
   },
 });
 

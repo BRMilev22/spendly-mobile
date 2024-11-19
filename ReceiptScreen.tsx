@@ -78,7 +78,6 @@ const ReceiptScreen = () => {
     }
   };
   
-
   const saveReceiptToFirestore = async (receiptData: any) => {
     try {
       const userId = auth.currentUser?.uid;
@@ -141,10 +140,7 @@ const ReceiptScreen = () => {
       console.error('Error saving receipt or updating monthly income:', error);
     }
   };
-  
-  
-  
-  
+
   return (
     <View style={styles.container}>
       {permissionResponse === null ? (
@@ -162,9 +158,7 @@ const ReceiptScreen = () => {
             </View>
           ) : (
             <View style={styles.buttonContainer}>
-              <TouchableOpacity style={styles.captureButton} onPress={handleCapture}>
-                <View style={styles.innerCircle} />
-              </TouchableOpacity>
+              <TouchableOpacity style={styles.transparentButton} onPress={handleCapture} />
             </View>
           )}
         </CameraView>
@@ -176,9 +170,13 @@ const ReceiptScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#000',
   },
   camera: {
     flex: 1,
+    borderRadius: 20,
+    overflow: 'hidden',
+    margin: 10,
   },
   buttonContainer: {
     flex: 1,
@@ -186,19 +184,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingBottom: 30,
   },
-  captureButton: {
+  transparentButton: {
     width: 70,
     height: 70,
     borderRadius: 35,
-    backgroundColor: '#FFFFFF',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  innerCircle: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: '#FD7C20',
+    borderWidth: 4,
+    borderColor: '#FFFFFF',
+    backgroundColor: 'transparent',
   },
   loadingOverlay: {
     position: 'absolute',
@@ -208,11 +200,11 @@ const styles = StyleSheet.create({
     bottom: 0,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#282c34', 
+    backgroundColor: '#282c34',
   },
   loadingIndicator: {
     alignItems: 'center',
-    backgroundColor: '#282c34', 
+    backgroundColor: '#282c34',
     padding: 20,
     borderRadius: 10,
   },

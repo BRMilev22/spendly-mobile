@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, ImageBackground, StyleSheet } from 'react-native';
-import { doc, getDoc, onSnapshot } from 'firebase/firestore'; 
+import { View, Text, ScrollView, ImageBackground, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { doc, onSnapshot } from 'firebase/firestore'; 
 import { firestore } from './firebase';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const HistoryScreen = () => {
   const [receipts, setReceipts] = useState([]);
+  const [filteredReceipts, setFilteredReceipts] = useState([]);
+  const [sortOrder, setSortOrder] = useState('date'); // 'date' or 'amount'
+  const [sortDirection, setSortDirection] = useState('desc'); // 'asc' or 'desc'
 
   useEffect(() => {
     const fetchReceipts = async () => {
@@ -31,11 +34,13 @@ const HistoryScreen = () => {
                   totalAmount: receipt.totalAmount?.data
                     ? parseFloat(receipt.totalAmount.data).toFixed(2)
                     : null,
+                  details: receipt.details,  // assuming you have a 'details' field for each receipt
                 };
               })
               .sort((a, b) => parseInt(a.id.split(' ')[1]) - parseInt(b.id.split(' ')[1])); 
 
             setReceipts(receiptsData);
+            setFilteredReceipts(receiptsData); // Initialize filtered receipts
           } else {
             console.log('No such user document!');
           }
@@ -50,6 +55,45 @@ const HistoryScreen = () => {
     fetchReceipts();
   }, []);
 
+  useEffect(() => {
+    const filterAndSortReceipts = () => {
+      let filtered = [...receipts];
+
+      if (sortOrder === 'date') {
+        filtered = filtered.sort((a, b) => {
+          const dateA = new Date(a.date);
+          const dateB = new Date(b.date);
+          return sortDirection === 'asc' ? dateA - dateB : dateB - dateA;
+        });
+      } else if (sortOrder === 'amount') {
+        filtered = filtered.sort((a, b) => {
+          const amountA = parseFloat(a.totalAmount);
+          const amountB = parseFloat(b.totalAmount);
+          return sortDirection === 'asc' ? amountA - amountB : amountB - amountA;
+        });
+      }
+
+      setFilteredReceipts(filtered);
+    };
+
+    filterAndSortReceipts();
+  }, [sortOrder, sortDirection, receipts]);
+
+  const handleSortChange = (order: string) => {
+    if (sortOrder === order) {
+      // Toggle the sort direction if the same criteria is selected again
+      setSortDirection(prevDirection => (prevDirection === 'asc' ? 'desc' : 'asc'));
+    } else {
+      setSortOrder(order);
+      setSortDirection('desc'); // Default to descending when changing sort criteria
+    }
+  };
+
+  const handleReceiptClick = (receiptId: string) => {
+    // Navigate to a detailed receipt screen or show a modal with details
+    console.log('Show details for receipt: ', receiptId);
+  };
+
   return (
     <ImageBackground
       source={require('./assets/background.png')}
@@ -58,16 +102,51 @@ const HistoryScreen = () => {
     >
       <View style={styles.overlay}>
         <Text style={styles.title}>History of Purchase</Text>
+
+        {/* Sort Buttons */}
+        <View style={styles.sortButtons}>
+          <TouchableOpacity
+            onPress={() => handleSortChange('date')}
+            style={[
+              styles.sortButton,
+              sortOrder === 'date' && styles.activeSortButton,  // Conditionally apply active style
+            ]}
+          >
+            <Text style={styles.sortButtonText}>Sort by Date {sortDirection === 'asc' ? '↑' : '↓'}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => handleSortChange('amount')}
+            style={[
+              styles.sortButton,
+              sortOrder === 'amount' && styles.activeSortButton,  // Conditionally apply active style
+            ]}
+          >
+            <Text style={styles.sortButtonText}>Sort by Amount {sortDirection === 'asc' ? '↑' : '↓'}</Text>
+          </TouchableOpacity>
+        </View>
+
         <ScrollView style={styles.scrollView}>
-          {receipts.map((receipt) => (
-            <View key={receipt.id} style={styles.receiptContainer}>
-              <Text style={styles.amountText}>
-                {receipt.totalAmount !== null ? `${receipt.totalAmount} BGN` : 'No amount available'}
-              </Text>
-              <Text style={styles.dateText}>
-                {receipt.date ? new Date(receipt.date).toLocaleDateString() : 'No date available'}
-              </Text>
-            </View>
+          {filteredReceipts.map((receipt) => (
+            <TouchableOpacity key={receipt.id} onPress={() => handleReceiptClick(receipt.id)}>
+              <View style={styles.receiptContainer}>
+                <View style={styles.receiptContent}>
+                  <View style={styles.receiptDetails}>
+                    <Text style={styles.amountText}>
+                      {receipt.totalAmount !== null ? `${receipt.totalAmount} BGN` : 'No amount available'}
+                    </Text>
+                    <Text style={styles.dateText}>
+                      {receipt.date ? new Date(receipt.date).toLocaleDateString() : 'No date available'}
+                    </Text>
+                  </View>
+
+                  {/* QR Code Image */}
+                  <Image
+                    source={require('./assets/qr-code.png')}  // Path to your QR code image
+                    style={styles.qrCodeImage}
+                  />
+                </View>
+              </View>
+            </TouchableOpacity>
           ))}
         </ScrollView>
       </View>
@@ -93,6 +172,23 @@ const styles = StyleSheet.create({
     color: 'white',
     marginBottom: 16,
   },
+  sortButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginBottom: 16,
+  },
+  sortButton: {
+    backgroundColor: '#555',
+    padding: 10,
+    borderRadius: 8,
+  },
+  activeSortButton: {
+    backgroundColor: 'green',  // Green color for active filter
+  },
+  sortButtonText: {
+    color: 'white',
+    fontSize: 16,
+  },
   scrollView: {
     flex: 1,
   },
@@ -102,12 +198,25 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 15,
   },
+  receiptContent: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  receiptDetails: {
+    flex: 1,
+  },
   amountText: {
     color: 'white',
     fontSize: 18,
   },
   dateText: {
     color: '#999',
+  },
+  qrCodeImage: {
+    width: 100,
+    height: 100,
+    marginLeft: 10,
   },
 });
 

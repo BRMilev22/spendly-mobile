@@ -32,20 +32,20 @@ Follow these steps to get the app up and running:
 1. **Clone the Repository**
 
    ```bash
-   git clone https://github.com/your-username/spendly-receipt-app.git
-   cd spendly-receipt-app
+   git clone https://github.com/BRMilev22/spendly-mobile.git
+   cd spendly-mobile
    ```
 
 2. **Install Dependencies**
 
    ```bash
-   npm install
+   npm install i
    ```
    
 3. **Run the App**
 
    ```bash
-   npx expo start
+   npm start
    ```
 
    - Use the Expo Go app on your phone to scan the QR code and run the app on your device, or launch the iOS/Android simulator.

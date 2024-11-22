@@ -1,71 +1,70 @@
-# 📸 Spendly - Mobile 🧾
+# 📸 Spendly - Mobile 🧾 
 
-Welcome to the **Spendly - Mobile**! 🚀 This  is our mobile app which lets users scan and process receipts effortlessly using their mobile device's camera and automatically saves the receipt details to our desktop app. It's the perfect solution for tracking expenses on the go! 📱💼
+**Spendly - Mobile** е мобилно приложение, което позволява на потребителите да сканират касови бележки с камерата на своето устройство, да извлекат необходимата информация и автоматично да я съхранят в настолното приложение. Това е идеалното решение за следене на разходите, докато сте в движение.  📱💼
 
-## 🛠️ Technologies Used
+## 🛠️ Исползвани технологии
 
-- **React Native** - For building a seamless, cross-platform mobile app.
-- **Expo Camera** - Utilized for camera functionality and scanning receipts.
-- **Firebase (Firestore & Authentication)** - Manages user authentication and stores receipt data securely.
-- **TypeScript** - Adds static typing for improved development experience.
-- **Taggun API** - Used for extracting receipt data (date, merchant, total amount) from images.
-- **NativeWind** - Enables a seamless, utility-first styling approach for React Native.
-- **Axios** - Handles HTTP requests to the Taggun API.
+- **React Native** - За създаване на мобилно приложение, което работи на множество платформи.  
+- **Expo Camera** - Използва се за улавяне на изображения и сканиране на бележки.  
+- **Firebase** - Сигурно управление на потребителски акаунти и съхранение на данни.  
+- **TypeScript** - За въвеждане на статично типизиране и по-добра поддръжка на кода.  
+- **Taggun API** - Извлича данни от сканираните бележки като дата, търговец и обща сума.  
+- **NativeWind** - За лесно стилизиране на компоненти с помощта на утилити класове.  
+- **Axios** - За обработка на HTTP заявки към Taggun API.  
 
-## ✨ Features
+## ✨ Функции
 
-- **📸 Receipt Scanning** - Capture receipts using the camera and automatically extract data like the date, and amount.
-- **🔐 User Authentication** - Secure login using Firebase Authentication.
-- **☁️ Real-time Data Storage** - Save your receipts in Firebase Firestore, where they can be accessed anytime.
+- **📸 Сканиране на бележки** - Заснемане на бележки с камерата и автоматично извличане на данни като дата и сума.  
+- **🔐 Безопасност** - Сигурен вход чрез Firebase Authentication.  
+- **☁️ Съхранение на данни в реално време** - Съхраняване на бележките в Firebase Firestore за достъп по всяко време.  
 
-## 📋 Prerequisites
+## 📋 Предварителни изисквания  
 
-Before you begin, ensure you have the following installed:
+За да стартирате приложението, трябва да инсталирате следното:  
 
-- [Node.js](https://nodejs.org/en/) (version 14 or higher)
-- [Expo CLI](https://docs.expo.dev/get-started/installation/) (for running the app)
-- Firebase account with a Firestore database set up
+- [Node.js](https://nodejs.org/en/) ( версия 14 или по-висока)
+- [Expo CLI](https://docs.expo.dev/get-started/installation/) ( за стартиране на приложението)
+- Firebase акаунт с настроена Firestore база данни.  
 
-## ⚡ Getting Started
+## ⚡ Инструкции за стартиране  
 
 Follow these steps to get the app up and running:
-1. **Clone the Repository**
+1. **Клонирайте repository-то**
 
    ```bash
    git clone https://github.com/BRMilev22/spendly-mobile.git
    cd spendly-mobile
    ```
 
-2. **Install Dependencies**
+2. **Инсталирайте библиотеките**
 
    ```bash
    npm install i
    ```
    
-3. **Run the App**
+3. **Стартирайте приложението**
 
    ```bash
    npm start
    ```
 
-   - Use the Expo Go app on your phone to scan the QR code and run the app on your device, or launch the iOS/Android simulator.
+   - Използвайте приложението Expo Go на вашия телефон, за да сканирате QR кода и стартирате приложението на устройството си, или стартирайте iOS/Android симулатор.  
 
-## 🔄 App Workflow
+## 🔄 Работен процес
+**1. Потребителят влиза чрез Firebase Authentication.  
+2. Приложението прави снимка на бележката с помощта на Expo Camera.  
+3. Данните от бележката се извличат чрез Taggun API.  
+4. Извлечените данни се записват във Firebase Firestore под уникалния ID на потребителя.  
+5. Потребителят получава известие при успешно съхранение на данните.**
 
-1. **User Authentication**: The user logs in through Firebase.
-2. **Receipt Scanning**: The app captures a photo using Expo Camera.
-3. **Receipt Processing**: Taggun API extracts relevant information.
-4. **Data Storage**: The extracted data is saved to Firestore under the user's ID.
-5. **Notifications**: The app notifies the user upon successful data storage.
-
-## 📚 Dependencies
+## 📚 Основни зависимости  
 
 Here are some key dependencies used in this project:
 
-- `react-native`: Mobile app development framework
-- `expo-camera`: For camera functionality
-- `firebase`: For authentication and database
-- `axios`: For making HTTP requests to the Taggun API
-- `nativewind`: For styling components with utility classes
+- `react-native:` Фреймуърк за разработка на мобилни приложения.  
+- `expo-camera:` За функционалност на камерата.  
+- `firebase:` За удостоверяване на потребители и база данни.  
+- `axios:` За обработка на HTTP заявки.  
+- `nativewind:` За стилизиране на компоненти.  
 
-  ## 🎉 Enjoy using Spendly! Made with ❤️
+  ## Насладете се на Spendly! Направено с ❤️

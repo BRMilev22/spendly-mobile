@@ -91,7 +91,6 @@ function Footer() {
                 className="font-bold text-primary hover:text-primary/50 lg:whitespace-nowrap"
                 href="/terms-and-conditions"
               >
-                Права & условия
               </motion.a>
             )}
             {legalLinks.privacyPolicy && (
@@ -104,7 +103,6 @@ function Footer() {
                 className="font-bold text-primary hover:text-primary/50 lg:whitespace-nowrap"
                 href="/privacy-policy"
               >
-                Политика за поверителност
               </motion.a>
             )}
             {legalLinks.cookiesPolicy && (
@@ -117,7 +115,6 @@ function Footer() {
                 className="font-bold text-primary hover:text-primary/50 lg:whitespace-nowrap"
                 href="/cookies-policy"
               >
-                Политика за бисквитки
               </motion.a>
             )}
           </div>

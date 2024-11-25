@@ -48,7 +48,7 @@ const ReceiptScreen = () => {
             headers: {
               'Content-Type': 'multipart/form-data',
               accept: 'application/json',
-              apikey: 'd4465e4090b011efb0f8efd54ea213cb',
+              apikey: '413f6580ab4d11ef84c965d8c9fc1f19',
             },
           }
         );

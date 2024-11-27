@@ -51,6 +51,7 @@ const AppTabs = () => {
           tabBarLabel: 'Receipts',
           tabBarIcon: ({ color, size }) => <Ionicons name="receipt" size={size} color={color} />,
           headerShown: false,
+          unmountOnBlur: true,
         }}
       />
       <Tab.Screen

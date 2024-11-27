@@ -174,9 +174,7 @@ const styles = StyleSheet.create({
   },
   camera: {
     flex: 1,
-    borderRadius: 20,
     overflow: 'hidden',
-    margin: 10,
   },
   buttonContainer: {
     flex: 1,

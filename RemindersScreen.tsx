@@ -157,7 +157,7 @@ const RemindersScreen = () => {
                     value={reminderDueDate}
                     mode="datetime"
                     is24Hour={true}
-                    display={Platform.OS === 'android' ? 'default' : 'spinner'}
+                    display={'default'}
                     onChange={onDateTimeChange}
                     minimumDate={new Date()}
                   />

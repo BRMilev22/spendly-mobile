@@ -9,6 +9,8 @@ import {
   ImageBackground,
   Dimensions,
   Animated,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
@@ -23,7 +25,8 @@ const HomeScreen = () => {
   const [biggestPurchase, setBiggestPurchase] = useState(null);
   const [isFormVisible, setFormVisible] = useState(false);
   const [chartData, setChartData] = useState(null);
-  const [formSlideAnim] = useState(new Animated.Value(0)); // Animation for form
+  const [formSlideAnim] = useState(new Animated.Value(0));
+  const [isImageLoaded, setIsImageLoaded] = useState(false);
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -120,7 +123,7 @@ const HomeScreen = () => {
     try {
       const incomeValue = parseFloat(monthlyIncome);
 
-      if (incomeValue > 6600) {
+      if (isNaN(incomeValue) || incomeValue < 1 || incomeValue > 6600) {
         alert('Your monthly income cannot exceed 6600. Please contact Spendly admins to resolve the issue.');
         return; // Prevent further execution if the income is too high
       }
@@ -158,12 +161,17 @@ const HomeScreen = () => {
   };
 
   return (
+    <KeyboardAvoidingView
+    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    style={{ flex: 1 }}
+    >
     <ImageBackground
       source={require('./assets/background.png')}
       style={styles.background}
       resizeMode="cover"
     >
-      {/* Header */}
+      <View style={styles.overlay}>
+        {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity style={styles.logoutButton} onPress={logout}>
           <Text style={styles.logoutButtonText}>Log Out</Text>
@@ -248,13 +256,19 @@ const HomeScreen = () => {
           <Text style={styles.saveButtonText}>Save</Text>
         </TouchableOpacity>
       </Animated.View>
+      </View>
     </ImageBackground>
+    </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
   background: {
     flex: 1,
+  },
+  overlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   header: {
     flexDirection: 'row',

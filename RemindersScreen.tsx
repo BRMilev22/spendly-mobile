@@ -82,7 +82,7 @@ const RemindersScreen = () => {
         Alert.alert('User ID not found');
       }
     } catch (error) {
-      console.error('Error adding reminder: ', error);
+      console.log('Error adding reminder: ', error);
       Alert.alert('Error adding reminder');
     }
   };
@@ -104,7 +104,7 @@ const RemindersScreen = () => {
         Alert.alert('User ID not found');
       }
     } catch (error) {
-      console.error('Error deleting reminder: ', error);
+      console.log('Error deleting reminder: ', error);
       Alert.alert('Error deleting reminder');
     }
   };
@@ -130,9 +130,9 @@ const RemindersScreen = () => {
       <View style={styles.overlay}>
         <View style={styles.container}>
           <Text style={styles.header}>Reminders</Text>
-          <View style={styles.addButton}>
-            <Button title="Add Reminder" onPress={() => setIsModalVisible(true)} color="#48BB78" />
-          </View>
+            <TouchableOpacity style={[styles.roundedButton, { backgroundColor: '#00D048', width: 200, alignSelf: 'center', marginBottom: 30, }]} onPress={() => setIsModalVisible(true)}>
+              <Text style={styles.roundedButtonText}>Add Reminder</Text>
+            </TouchableOpacity>
           <Modal visible={isModalVisible} animationType="slide" transparent={true}>
             <View style={styles.modalOverlay}>
               <View style={styles.modalContent}>
@@ -163,8 +163,12 @@ const RemindersScreen = () => {
                   />
                 )}
                 <View style={styles.modalButtons}>
-                  <Button title="Save" onPress={handleAddReminder} color="#48BB78" />
-                  <Button title="Cancel" onPress={() => setIsModalVisible(false)} color="#FD7C20" />
+                  <TouchableOpacity style={[styles.roundedButton, { backgroundColor: '#00D048' }]} onPress={handleAddReminder}>
+                    <Text style={styles.roundedButtonText}>Save</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={[styles.roundedButton, { backgroundColor: '#FD7C20' }]} onPress={() => setIsModalVisible(false)}>
+                    <Text style={styles.roundedButtonText}>Cancel</Text>
+                  </TouchableOpacity>
                 </View>
               </View>
             </View>
@@ -192,13 +196,25 @@ const RemindersScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
   },
   header: {
     fontSize: 24,
     color: 'white',
     textAlign: 'center',
     marginBottom: 20,
+  },
+  roundedButton: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 50, 
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginVertical: 10,
+  },
+  roundedButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
   input: {
     backgroundColor: '#444',

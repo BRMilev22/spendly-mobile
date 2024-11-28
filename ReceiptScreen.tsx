@@ -65,7 +65,7 @@ const ReceiptScreen = () => {
         if (axios.isAxiosError(error) && error.response?.status === 400) {
           Alert.alert('Warning', 'This is not a receipt.');
         } else {
-          console.error('Error capturing or processing the receipt:', error);
+          console.log('Error capturing or processing the receipt:', error);
         }
       } finally {
         setLoading(false);
@@ -82,7 +82,7 @@ const ReceiptScreen = () => {
     try {
       const userId = auth.currentUser?.uid;
       if (!userId) {
-        console.error('User is not authenticated');
+        console.log('User is not authenticated');
         return;
       }
   
@@ -125,7 +125,7 @@ const ReceiptScreen = () => {
       const userData = userSnapshot.data();
   
       if (!userData || typeof userData.monthlyIncome !== 'number') {
-        console.error('Monthly income data is missing or invalid');
+        console.log('Monthly income data is missing or invalid');
         return;
       }
   
@@ -137,7 +137,7 @@ const ReceiptScreen = () => {
       console.log('Receipt saved and monthly income updated in Firestore');
       Alert.alert('Success', 'Receipt saved and user balance updated');
     } catch (error) {
-      console.error('Error saving receipt or updating monthly income:', error);
+      console.log('Error saving receipt or updating monthly income:', error);
     }
   };
 

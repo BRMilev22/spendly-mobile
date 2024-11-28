@@ -31,7 +31,7 @@ const AppTabs = () => {
     <Tab.Navigator
       screenOptions={{
         tabBarStyle: { backgroundColor: '#222222' },
-        tabBarActiveTintColor: '#00D048',
+        tabBarActiveTintColor: '#4f4f4f',
         tabBarInactiveTintColor: '#D9D9D9',
       }}
     >

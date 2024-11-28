@@ -15,7 +15,7 @@ const HistoryScreen = () => {
       try {
         const userId = await AsyncStorage.getItem('userId');
         if (!userId) {
-          console.error('User ID not found');
+          console.log('User ID not found');
           return;
         }
 
@@ -48,7 +48,7 @@ const HistoryScreen = () => {
 
         return () => unsubscribe();
       } catch (error) {
-        console.error('Error fetching receipts:', error);
+        console.log('Error fetching receipts:', error);
       }
     };
 
@@ -134,6 +134,10 @@ const HistoryScreen = () => {
                     <Text style={styles.amountText}>
                       {receipt.totalAmount !== null ? `${receipt.totalAmount} BGN` : 'No amount available'}
                     </Text>
+                    {/* Line below the amount */}
+                    <View style={styles.breakLine} />
+                    {/* "Receipt" label below the line */}
+                    <Text style={styles.receiptText}>Receipt</Text>
                     <Text style={styles.dateText}>
                       {receipt.date ? new Date(receipt.date).toLocaleDateString() : 'No date available'}
                     </Text>
@@ -141,7 +145,7 @@ const HistoryScreen = () => {
 
                   {/* QR Code Image */}
                   <Image
-                    source={require('./assets/qr-code.png')}  // Path to your QR code image
+                    source={require('./assets/qr-code.png')} // Path to your QR code image
                     style={styles.qrCodeImage}
                   />
                 </View>
@@ -183,7 +187,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   activeSortButton: {
-    backgroundColor: 'green',  // Green color for active filter
+    backgroundColor: '#00D048',  // Green color for active filter
   },
   sortButtonText: {
     color: 'white',
@@ -206,9 +210,21 @@ const styles = StyleSheet.create({
   receiptDetails: {
     flex: 1,
   },
+  breakLine: {
+    height: 2,
+    backgroundColor: '#fff', // Adjust the color as needed
+    marginVertical: 10,
+    width: '60%',
+  },
+  receiptText: {
+    color: '#fff', // Adjust the text color
+    marginBottom: 10,
+    fontSize: 14, // Smaller font size for the label
+    textAlign: 'left',
+  },
   amountText: {
     color: 'white',
-    fontSize: 18,
+    fontSize: 24,
   },
   dateText: {
     color: '#999',

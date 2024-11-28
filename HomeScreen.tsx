@@ -36,7 +36,7 @@ const HomeScreen = () => {
 
       const userId = await AsyncStorage.getItem('userId');
       if (!userId) {
-        console.error('User ID not found');
+        console.log('User ID not found');
         return;
       }
 
@@ -46,7 +46,7 @@ const HomeScreen = () => {
           const userData = snapshot.data();
           setMonthlyIncome(userData.monthlyIncome?.toFixed(2) || '0');
         } else {
-          console.error('No such user document!');
+          console.log('No such user document!');
         }
       });
     };
@@ -55,7 +55,7 @@ const HomeScreen = () => {
       try {
         const userId = await AsyncStorage.getItem('userId');
         if (!userId) {
-          console.error('User ID not found');
+          console.log('User ID not found');
           return;
         }
 
@@ -97,11 +97,11 @@ const HomeScreen = () => {
               ],
             });
           } else {
-            console.error('No receipts data found!');
+            console.log('No receipts data found!');
           }
         });
       } catch (error) {
-        console.error('Error fetching receipts:', error);
+        console.log('Error fetching receipts:', error);
       }
     };
 
@@ -146,12 +146,12 @@ const HomeScreen = () => {
 
         console.log('Profile updated in Firestore');
       } else {
-        console.error('User ID not found');
+        console.log('User ID not found');
       }
 
       toggleForm();
     } catch (error) {
-      console.error('Error saving profile:', error);
+      console.log('Error saving profile:', error);
     }
   };
 
@@ -287,10 +287,10 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   editButton: {
-    backgroundColor: '#222222',
+    backgroundColor: '#3B3B3B',
     paddingVertical: 8,
     paddingHorizontal: 16,
-    borderRadius: 10,
+    borderRadius: 20,
   },
   editButtonText: {
     color: 'white',
@@ -304,6 +304,7 @@ const styles = StyleSheet.create({
   welcomeText: {
     fontSize: 20,
     color: '#fff',
+    marginTop: 50,
   },
   usernameText: {
     fontSize: 32,
@@ -318,7 +319,7 @@ const styles = StyleSheet.create({
   balance: {
     fontSize: 48,
     fontWeight: '800',
-    color: '#00D048',
+    color: '#D9D9D9',
   },
   currency: {
     fontSize: 20,
@@ -326,6 +327,7 @@ const styles = StyleSheet.create({
     marginLeft: 5,
   },
   chartCard: {
+    marginTop: 70,
     backgroundColor: '#2a2a2a',
     borderRadius: 15,
     padding: 10,
@@ -343,9 +345,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '100%',
+    marginTop: 20,
   },
   purchaseCard: {
-    backgroundColor: '#D9D9D9',
+    backgroundColor: '#3B3B3B',
     borderRadius: 15,
     padding: 15,
     width: '48%',
@@ -355,14 +358,14 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#3B3B3B',
+    color: '#D9D9D9',
     marginBottom: 10,
   },
   cardValue: {
     marginTop: 8,
     fontSize: 22,
     fontWeight: '800',
-    color: '#3B3B3B',
+    color: '#D9D9D9',
   },
   formContainer: {
     position: 'absolute',
